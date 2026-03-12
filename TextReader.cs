@@ -91,7 +91,8 @@ public class TextExtractor : BaseUnityPlugin
         {
             string options;
             interactLook = look;
-            EmitTextChange($"look active: {look}");
+            string term = lookChoices.transform.Find("Term/Background/Text")?.GetComponent<TextMeshProUGUI>().text; // IMPROVEMENT This object should be more global, so that the description can also use Terms
+            EmitTextChange($"look active: {look} on {term}");
             if (look) options = $"[Options]: Look at description";
             else return;
 
@@ -122,6 +123,49 @@ public class TextExtractor : BaseUnityPlugin
                 string buttonRightText = lookChoices.transform.Find("SelectR/Background/Text")?.GetComponent<TextMeshProUGUI>().text;
                 options = options + $", Button Right option: {buttonRightText}";
             }
+
+            bool buttonZoom = lookChoices.transform.Find("Zoom").gameObject.activeSelf;
+            if (buttonZoom)
+            {
+                options += $", Zoom possible";
+            }
+            
+            bool buttonThermo = lookChoices.transform.Find("Thermo").gameObject.activeSelf;
+            if (buttonThermo)
+            {
+                options += $", Thermo possible";
+            }
+            
+            bool buttonXray = lookChoices.transform.Find("XRay").gameObject.activeSelf;
+            if (buttonXray)
+            {
+                options += $", XRay possible";
+            }
+            
+            bool buttonNV = lookChoices.transform.Find("NV").gameObject.activeSelf; // NOTE NV is Night Vision
+            if (buttonNV)
+            {
+                options += $", NV possible";
+            }
+            
+            bool buttonZoomThermo = lookChoices.transform.Find("ZoomThermo").gameObject.activeSelf;
+            if (buttonZoomThermo)
+            {
+                options += $", Zoom Thermo possible";
+            }
+            
+            bool buttonZoomXray = lookChoices.transform.Find("ZoomXRay").gameObject.activeSelf;
+            if (buttonZoomXray)
+            {
+                options += $", Zoom XRay possible";
+            }
+            
+            bool buttonZoomNV = lookChoices.transform.Find("ZoomNV").gameObject.activeSelf;
+            if (buttonZoomNV)
+            {
+                options += $", Zoom NV possible";
+            }
+
 
             EmitTextChange(options);
         
