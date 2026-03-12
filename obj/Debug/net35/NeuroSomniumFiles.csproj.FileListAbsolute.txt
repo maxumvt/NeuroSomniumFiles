@@ -13,3 +13,19 @@ E:\SteamLibrary\steamapps\common\AI The Somnium Files\NeuroSomniumFiles\obj\Debu
 E:\SteamLibrary\steamapps\common\AI The Somnium Files\NeuroSomniumFiles\obj\Debug\net35\NeuroSom.23EFD9C7.Up2Date
 E:\SteamLibrary\steamapps\common\AI The Somnium Files\NeuroSomniumFiles\obj\Debug\net35\NeuroSomniumFiles.dll
 E:\SteamLibrary\steamapps\common\AI The Somnium Files\NeuroSomniumFiles\obj\Debug\net35\NeuroSomniumFiles.pdb
+D:\GameModding\NeuroSomniumFiles\bin\Debug\net35\NeuroSomniumFiles.dll
+D:\GameModding\NeuroSomniumFiles\bin\Debug\net35\NeuroSomniumFiles.pdb
+D:\GameModding\NeuroSomniumFiles\bin\Debug\net35\BepInEx.dll
+D:\GameModding\NeuroSomniumFiles\bin\Debug\net35\TMPro.dll
+D:\GameModding\NeuroSomniumFiles\bin\Debug\net35\UnityEngine.CoreModule.dll
+D:\GameModding\NeuroSomniumFiles\bin\Debug\net35\UnityEngine.dll
+D:\GameModding\NeuroSomniumFiles\bin\Debug\net35\UnityEngine.UI.dll
+D:\GameModding\NeuroSomniumFiles\obj\Debug\net35\NeuroSomniumFiles.csproj.AssemblyReference.cache
+D:\GameModding\NeuroSomniumFiles\obj\Debug\net35\NeuroSomniumFiles.GeneratedMSBuildEditorConfig.editorconfig
+D:\GameModding\NeuroSomniumFiles\obj\Debug\net35\NeuroSomniumFiles.AssemblyInfoInputs.cache
+D:\GameModding\NeuroSomniumFiles\obj\Debug\net35\NeuroSomniumFiles.AssemblyInfo.cs
+D:\GameModding\NeuroSomniumFiles\obj\Debug\net35\NeuroSomniumFiles.csproj.CoreCompileInputs.cache
+D:\GameModding\NeuroSomniumFiles\obj\Debug\net35\NeuroSomniumFiles.sourcelink.json
+D:\GameModding\NeuroSomniumFiles\obj\Debug\net35\NeuroSom.23EFD9C7.Up2Date
+D:\GameModding\NeuroSomniumFiles\obj\Debug\net35\NeuroSomniumFiles.dll
+D:\GameModding\NeuroSomniumFiles\obj\Debug\net35\NeuroSomniumFiles.pdb
