@@ -1,15 +1,14 @@
 using WebSocketSharp;
 using UnityEngine;
-using BepInEx.Logging;
+using NeuroSomniumFiles;
 
 public class NeuroConnection
 {
     private WebSocket ws;
-    private ManualLogSource logger;
-
-    public NeuroConnection(ManualLogSource logger)
+    private GameConnection main;
+    public NeuroConnection(GameConnection main)
     {
-        this.logger = logger;
+        this.main = main;
     }
 
     public void Connect()
@@ -40,7 +39,8 @@ public class NeuroConnection
     private void OnMessage(object sender, MessageEventArgs e)
     {
         Debug.Log("[WebSocket] Received: " + e.Data);
-        logger.LogInfo(e.Data);
+        string text = e.Data;
+        main.debugFuntion(text);
     }
 
     private void OnError(object sender, WebSocketSharp.ErrorEventArgs e)

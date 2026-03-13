@@ -1,42 +1,18 @@
 using UnityEngine;
 using TMPro;
+using NeuroSomniumFiles;
 
-public class DescriptionReader
+public class State
 {
-    private TextMeshProUGUI descriptionDialogue;
-
-    private string lastLine = "";
-    private bool descriptionShow = false;
-
-    private MonoBehaviour plugin;
-
-    public DescriptionReader(MonoBehaviour plugin)
+    public GameConnection main;
+    public State(GameConnection main)
     {
-        this.plugin = plugin;
+        this.main = main;
     }
 
     public void Update(bool allowSearch, NeuroConnection connection)
     {
-        if (allowSearch && descriptionDialogue == null)
-        {
-            descriptionDialogue = GameObject
-                .Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/NarrationWindow/GameObject/Background/Text")
-                ?.GetComponent<TextMeshProUGUI>();
-        }
-
-        if (descriptionDialogue == null) return;
-
-        string text = descriptionDialogue.text;
-
-        if (!string.IsNullOrEmpty(text) && (text != lastLine || descriptionShow))
-        {
-            string line = "[Description]: " + text;
-            Debug.Log(line);
-
-            connection.SendText(line);
-
-            lastLine = text;
-            descriptionShow = false;
-        }
+        main.debugFuntion("Update is being done");
     }
+    
 }

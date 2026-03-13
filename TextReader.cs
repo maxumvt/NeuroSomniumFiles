@@ -31,8 +31,8 @@ public class TextExtractor : BaseUnityPlugin
     void Awake()
     {
         Logger.LogInfo("NeuroSomniumFiles started");
-        sender = new NeuroConnection(Logger);
-        sender.Connect();
+        //sender = new NeuroConnection(Logger);
+        //sender.Connect();
     }
 
     void Update()
@@ -183,6 +183,6 @@ public class TextExtractor : BaseUnityPlugin
     {
         Logger.LogInfo(text);
         string json = "{\"text\": \"" + text.Replace("\"", "\\\"") + "\"}";
-        sender.SendString(json);
+        //sender.SendString(json);
     }
 }
