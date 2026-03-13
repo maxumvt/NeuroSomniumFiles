@@ -24,12 +24,12 @@ public class NeuroConnection
         ws.Connect();
     }
 
-    public void SendString(string json)
+    public void SendText(string text)
     {
-        if (ws != null && ws.IsAlive)
-        {
-            ws.Send(json);
-        }
+        if (ws == null || !ws.IsAlive) return;
+
+        string json = "{\"" + text.Replace("\"", "\\\"") + "\"}";
+        ws.Send(json);
     }
 
     private void OnOpen(object sender, System.EventArgs e)
@@ -40,8 +40,7 @@ public class NeuroConnection
     private void OnMessage(object sender, MessageEventArgs e)
     {
         Debug.Log("[WebSocket] Received: " + e.Data);
-        string text = e.Data;
-        logger.LogInfo(text);
+        logger.LogInfo(e.Data);
     }
 
     private void OnError(object sender, WebSocketSharp.ErrorEventArgs e)
