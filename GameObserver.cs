@@ -18,6 +18,8 @@ public class GameObserver : BaseUnityPlugin
     public TextMeshProUGUI characterDialogue;
     public TextMeshProUGUI descriptionDialogue;
     public GameObject lookChoices;
+
+    public UnregisterActionsMessage unregisterActionMessage = new UnregisterActionsMessage();
     
     public string dialogueLastline;
     public string descriptionLastline;
@@ -163,6 +165,7 @@ public class GameObserver : BaseUnityPlugin
             if (buttonZoomNV) actions.Add(new Action("zoom_night_vision", "Zoom night vision view."));
 
             RegisterActionsMessage ram = new RegisterActionsMessage(actions);
+            unregisterActionMessage.setActionNames(actions);
             connection.SendString(ram.ToJson());
         
         }

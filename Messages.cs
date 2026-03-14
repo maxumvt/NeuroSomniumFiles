@@ -81,10 +81,24 @@ public class UnregisterActionsMessage : NeuroMessage
 {
     public List<string> actionNames;
 
-    public UnregisterActionsMessage(List<string> names)
+    public UnregisterActionsMessage()
     {
         command = "actions/unregister";
-        actionNames = names;
+        actionNames = new List<string>();
+    }
+
+    public void setActionNames(List<Action> acts)
+    {
+        actionNames.Clear();
+        
+        for (int i = 0; i < acts.Count; i++)
+        {
+            actionNames.Add(acts[i].name);
+        }
+    }
+    public List<string> getActionNames()
+    {
+        return actionNames;
     }
 
     public string ToJson()
