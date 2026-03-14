@@ -5,12 +5,6 @@ using BepInEx.Logging;
 public class NeuroConnection
 {
     private WebSocket ws;
-    private ManualLogSource logger;
-
-    public NeuroConnection(ManualLogSource logger)
-    {
-        this.logger = logger;
-    }
 
     public void Connect()
     {
@@ -41,7 +35,6 @@ public class NeuroConnection
     {
         Debug.Log("[WebSocket] Received: " + e.Data);
         string text = e.Data;
-        logger.LogInfo(text);
     }
 
     private void OnError(object sender, WebSocketSharp.ErrorEventArgs e)
