@@ -32,42 +32,88 @@ public class MyPlugin : BaseUnityPlugin
     }
 }
 
+
+// Functionaolity
 public class AgentController
 {
     private NetworkClient network;
     private ObservationProvider observations;
     private ActionRegistry actions;
-
-    public AgentController(NetworkClient net,
-                           ObservationProvider obs,
-                           ActionRegistry act)
+    public AgentController(NetworkClient net, ObservationProvider obs, ActionRegistry act)
     {
         network = net;
         observations = obs;
         actions = act;
     }
 
+    private float searchTimer = 0;
+    private bool searchAllowed = true;
+
     public void Initialize()
     {
         network.Connect();
         network.OnMessageReceived += actions.Validate;
+        observations.OnBannerText += network.SendString;
     }
 
     public void Tick()
     {
-        var obs = observations.Collect();
-        //network.SendString(obs);
+        searchTimer += Time.deltaTime;
+        if ( searchTimer > 1f) { searchAllowed = true; searchTimer = 0f; }
+        else searchAllowed = false;
+        
+        observations.Collect(searchAllowed);
     }
 }
 
 public class ObservationProvider
 {
-    public ObservationData Collect()
+    public event Action<string> OnBannerText;
+
+    public RawImage characterNamePlate;
+    public TextMeshProUGUI characterDialogue;
+    public TextMeshProUGUI descriptionDialogue;
+    public string dialogueLastline;
+    public string descriptionLastline;
+
+    public void Collect(bool searchAllowed)
     {
-        return new ObservationData
+        CharacterSpeaking(searchAllowed);
+        DescriptionText(searchAllowed);
+    }
+
+    void CharacterSpeaking(bool allowSearch)
+    {
+        if (allowSearch && characterNamePlate == null) {characterNamePlate = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/MessageWindow/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
+        if (allowSearch && characterDialogue == null) {characterDialogue = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/MessageWindow/Rig/Background/Text")?.GetComponent<TextMeshProUGUI>();} // Necessary for finding the object
+        
+        if (characterNamePlate != null && characterDialogue != null)
         {
-            target = "boss", entity = "boss", text= $"says: something"
-        };
+            string nameText = characterNamePlate.mainTexture.name;
+            string dialogueText = characterDialogue.text;
+
+            if (!string.IsNullOrEmpty(dialogueText) && dialogueLastline != dialogueText)
+            {
+                dialogueLastline = dialogueText;
+                ContextMessage cMsg = new ContextMessage($"{nameText} says: {dialogueText}", false);
+                OnBannerText?.Invoke(cMsg.ToJson());
+            }
+        }
+    }
+    void DescriptionText(bool allowSearch)
+    {
+        if (allowSearch && descriptionDialogue == null) {  descriptionDialogue = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/NarrationWindow/GameObject/Background/Text")?.GetComponent<TextMeshProUGUI>(); }
+        if (descriptionDialogue != null)
+        {
+            string descrText = descriptionDialogue.text;
+            // ERROR Clicking description type windows with one line only, can cause the description not to be logged again. This is bad feedback and needs some kind of solution
+            if (!string.IsNullOrEmpty(descrText) && (descrText != descriptionLastline))
+            {
+                descriptionLastline = descrText;
+                ContextMessage cMsg = new ContextMessage($"Description text: {descrText}", false);
+                OnBannerText?.Invoke(cMsg.ToJson());
+            }
+        }
     }
 }
 
@@ -145,14 +191,13 @@ public class NetworkClient : BaseUnityPlugin
     }
 }
 
-
+// Resources
 public class ObservationData
 {
     public string target;
     public string entity;
     public string text;
 }
-
 
 public class NeuroMessage
 {
