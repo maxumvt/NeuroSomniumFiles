@@ -8,7 +8,7 @@ using WebSocketSharp;
 using BepInEx;
 using System.Collections.Generic;
 using System;
-
+using System.Runtime.Remoting.Contexts;
 
 [BepInPlugin("com.maxum.dialoglogger", "NeuroSomniumFiles", "1.0.0")]
 public class MyPlugin : BaseUnityPlugin
@@ -57,7 +57,10 @@ public class AgentController
 
         network.OnMessageReceived += actions.Validate;
         observations.OnBannerText += network.SendString;
+        observations.OnLookChoicesUpdated += actions.Register;
+        observations.OnTermChange += network.SendString;
         actions.OnUpdateActionList += network.SendString;
+
     }
 
     public void Tick()
@@ -72,18 +75,25 @@ public class AgentController
 
 public class ObservationProvider
 {
+    public event Action<string> OnTermChange;
     public event Action<string> OnBannerText;
+    public event Action<Dictionary<string, string>> OnLookChoicesUpdated;
 
     public RawImage characterNamePlate;
     public TextMeshProUGUI characterDialogue;
     public TextMeshProUGUI descriptionDialogue;
+    public GameObject lookChoices;
     public string dialogueLastline;
     public string descriptionLastline;
+    public string currentTerm = "";
+    public Dictionary<string, string> CurrentOptions = new Dictionary<string, string>();
+    public bool interactLook = false;
 
     public void Collect(bool searchAllowed)
     {
         CharacterSpeaking(searchAllowed);
         DescriptionText(searchAllowed);
+        LookChoicesOptions(searchAllowed);
     }
 
     public void CharacterSpeaking(bool allowSearch)
@@ -119,7 +129,108 @@ public class ObservationProvider
             }
         }
     }
+    public void LookChoicesOptions(bool allowSearch)
+    {
+        if (lookChoices == null)
+        {
+            if (!allowSearch) return;
 
+            lookChoices = GameObject.Find("$Root/CommandCanvas/ScreenScaler/Command/Scale");
+            if (lookChoices == null) return;
+        }
+
+        bool lookActive = lookChoices.transform.Find("Look").gameObject.activeSelf;
+
+        if (interactLook == lookActive) return; // no change
+        interactLook = lookActive;
+
+        CurrentOptions.Clear();
+        if (!lookActive)
+        {
+            currentTerm = "";
+            return;
+        }
+
+        // update term
+        var termText = lookChoices.transform.Find("Term/Background/Text")?.GetComponent<TextMeshProUGUI>().text;
+        currentTerm = termText ?? "";
+        ContextMessage cMsg = new ContextMessage($"Looking at {currentTerm}", false);
+        OnTermChange?.Invoke(cMsg.ToJson());
+
+
+        bool buttonUp = lookChoices.transform.Find("SelectU").gameObject.activeSelf;
+        if (buttonUp)
+        {
+            string buttonUpText = lookChoices.transform.Find("SelectU/Background/Text")?.GetComponent<TextMeshProUGUI>().text;
+            CurrentOptions["button_up"] = buttonUpText;
+        }
+
+        bool buttonDown = lookChoices.transform.Find("SelectD").gameObject.activeSelf;
+        if (buttonDown)
+        {
+            string buttonDownText = lookChoices.transform.Find("SelectD/Background/Text")?.GetComponent<TextMeshProUGUI>().text;
+            CurrentOptions["button_up"] = buttonDownText;
+        }
+
+        bool buttonLeft = lookChoices.transform.Find("SelectL").gameObject.activeSelf;
+        if (buttonLeft)
+        {
+            string buttonLeftText = lookChoices.transform.Find("SelectL/Background/Text")?.GetComponent<TextMeshProUGUI>().text;
+            CurrentOptions["button_up"] = buttonLeftText;
+        }
+
+        bool buttonRight = lookChoices.transform.Find("SelectR").gameObject.activeSelf;
+        if (buttonRight)
+        {
+            string buttonRightText = lookChoices.transform.Find("SelectR/Background/Text")?.GetComponent<TextMeshProUGUI>().text;
+            CurrentOptions["button_up"] = buttonRightText;
+        }
+
+        bool buttonZoom = lookChoices.transform.Find("Zoom").gameObject.activeSelf;
+        if (buttonZoom)
+        {
+            CurrentOptions["zoom_button"] = $"Zoom into {termText}";
+        }
+        
+        bool buttonThermo = lookChoices.transform.Find("Thermo").gameObject.activeSelf;
+        if (buttonThermo)
+        {
+            CurrentOptions["thermo_button"] = $"Thermo vision on {termText}";
+        }
+        
+        bool buttonXray = lookChoices.transform.Find("XRay").gameObject.activeSelf;
+        if (buttonXray)
+        {
+            CurrentOptions["xray_button"] = $"XRay vision on {termText}";
+        }
+        
+        bool buttonNV = lookChoices.transform.Find("NV").gameObject.activeSelf;
+        if (buttonNV)
+        {
+            CurrentOptions["night_vision_button"] = $"Night vision on {termText}";
+        }
+        
+        bool buttonZoomThermo = lookChoices.transform.Find("ZoomThermo").gameObject.activeSelf;
+        if (buttonZoomThermo)
+        {
+            CurrentOptions["zoom_thermo_button"] = $"Thermo vision and zoom into {termText}";
+        }
+        
+        bool buttonZoomXray = lookChoices.transform.Find("ZoomXRay").gameObject.activeSelf;
+        if (buttonZoomXray)
+        {
+            CurrentOptions["zoom_xray_button"] = $"XRay vision and zoom into {termText}";
+        }
+        
+        bool buttonZoomNV = lookChoices.transform.Find("ZoomNV").gameObject.activeSelf;
+        if (buttonZoomNV)
+        {
+            CurrentOptions["zoom_night_vision_button"] = $"Night vision and zoom into {termText}";
+        }
+
+        // emit event
+        OnLookChoicesUpdated?.Invoke(CurrentOptions);
+    }
 }
 
 public class ActionRegistry
