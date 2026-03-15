@@ -117,7 +117,7 @@ public class ObservationProvider
     }
 }
 
-public class ActionRegistry : BaseUnityPlugin
+public class ActionRegistry
 {
     private Dictionary<string, string> actions
         = new Dictionary<string, string>();
@@ -134,7 +134,7 @@ public class ActionRegistry : BaseUnityPlugin
 
     public void Validate(string json)
     {
-        Logger.LogInfo($"this is received in ActionRegistery: {json}");
+        Debug.Log($"this is received in ActionRegistery: {json}");
     }
 
     public void Execute(string data)
@@ -143,7 +143,7 @@ public class ActionRegistry : BaseUnityPlugin
     }
 }
 
-public class NetworkClient : BaseUnityPlugin
+public class NetworkClient
 {
     private WebSocket ws;
     public event Action<string> OnMessageReceived;
@@ -162,24 +162,24 @@ public class NetworkClient : BaseUnityPlugin
 
     private void OnOpen(object sender, System.EventArgs e)
     {
-        Logger.LogInfo("[WebSocket] Connected");
+        Debug.Log("[WebSocket] Connected");
     }
 
     private void OnMessage(object sender, MessageEventArgs e)
     {
-        Logger.LogInfo("[WebSocket] Received: " + e.Data);
+        Debug.Log("[WebSocket] Received: " + e.Data);
         string text = e.Data;
         OnMessageReceived?.Invoke(text);
     }
 
     private void OnError(object sender, ErrorEventArgs e)
     {
-        Logger.LogInfo("[WebSocket] Error: " + e.Message);
+        Debug.Log("[WebSocket] Error: " + e.Message);
     }
 
     private void OnClose(object sender, CloseEventArgs e)
     {
-        Logger.LogInfo("[WebSocket] Closed: " + e.Code);
+        Debug.Log("[WebSocket] Closed: " + e.Code);
     }
 
     public void SendString(string json)
