@@ -57,6 +57,7 @@ public class AgentController
 
         network.OnMessageReceived += actions.Validate;
         observations.OnBannerText += network.SendString;
+        actions.OnUpdateActionList += network.SendString;
     }
 
     public void Tick()
@@ -85,7 +86,7 @@ public class ObservationProvider
         DescriptionText(searchAllowed);
     }
 
-    void CharacterSpeaking(bool allowSearch)
+    public void CharacterSpeaking(bool allowSearch)
     {
         if (allowSearch && characterNamePlate == null) {characterNamePlate = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/MessageWindow/Rig/Name/Text")?.GetComponent<RawImage>();} // Necessary for finding the object
         if (allowSearch && characterDialogue == null) {characterDialogue = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/MessageWindow/Rig/Background/Text")?.GetComponent<TextMeshProUGUI>();} // Necessary for finding the object
@@ -103,7 +104,7 @@ public class ObservationProvider
             }
         }
     }
-    void DescriptionText(bool allowSearch)
+    public void DescriptionText(bool allowSearch)
     {
         if (allowSearch && descriptionDialogue == null) {  descriptionDialogue = GameObject.Find("$Root/UICanvas/ScreenScaler/UIOff1/PanelNode/NarrationWindow/GameObject/Background/Text")?.GetComponent<TextMeshProUGUI>(); }
         if (descriptionDialogue != null)
@@ -118,31 +119,85 @@ public class ObservationProvider
             }
         }
     }
+
 }
 
 public class ActionRegistry
 {
-    private Dictionary<string, string> actions
-        = new Dictionary<string, string>();
+    public event Action<string> OnUpdateActionList;
+    public Dictionary<string,string> actions = new Dictionary<string, string>();
 
-    public void Register(string name, string action)
+    public void Register(Dictionary<string,string> acts)
     {
-        actions[name] = action;
+        actions = acts;
+        OnUpdateActionList?.Invoke(ToJsonRegister());
     }
 
-    public void Unregister(string name)
+    public void Unregister()
     {
-        actions.Remove(name);
+        OnUpdateActionList?.Invoke(ToJsonUnRegister());
+        actions.Clear();
     }
 
     public void Validate(string json)
     {
         Debug.Log($"this is received in ActionRegistery: {json}");
+        // check valid
+        // if valid send back action success -> then call unregister -> then execute
+        // else only send error back
     }
 
     public void Execute(string data)
     {
         
+    }
+
+    public string ToJsonRegister()
+    {
+        // build JSON array of actions
+        string actionsJson = "";
+        int i = 0;
+        foreach (var kv in actions)
+        {
+            if (i > 0) actionsJson += ",";
+            actionsJson += "{"
+                        + $"\"name\":\"{kv.Key}\","
+                        + $"\"description\":\"{kv.Value}\""
+                        + "}";
+            i++;
+        }
+
+        return "{"
+           + "\"command\":\"actions/register\","
+           + "\"game\":\"AI Somnium Files\","
+           + "\"data\":{"
+           + $"\"actions\":[{actionsJson}]"
+           + "}"
+           + "}";
+    }
+
+    public string ToJsonUnRegister()
+    {
+        // build JSON array of actions
+        string actionsJson = "";
+        int i = 0;
+        foreach (var kv in actions)
+        {
+            if (i > 0) actionsJson += ",";
+            actionsJson += "{"
+                        + $"\"name\":\"{kv.Key}\","
+                        + $"\"description\":\"{kv.Value}\""
+                        + "}";
+            i++;
+        }
+
+        return "{"
+           + "\"command\":\"actions/unregister\","
+           + "\"game\":\"AI Somnium Files\","
+           + "\"data\":{"
+           + $"\"actions\":[{actionsJson}]"
+           + "}"
+           + "}";
     }
 }
 
@@ -213,18 +268,6 @@ public class NeuroMessage
             + "\"command\":\"" + command + "\","
             + "\"game\":\"" + game + "\","
             + "}";
-    }
-}
-
-public class Action
-{
-    public string name;
-    public string description;
-
-    public Action(string n, string d)
-    {
-        name = n;
-        description = d;
     }
 }
 
